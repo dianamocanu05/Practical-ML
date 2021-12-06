@@ -45,13 +45,29 @@ public class Algorithms {
     }
 
 
+    /**
+     * https://www.geeksforgeeks.org/kruskals-minimum-spanning-tree-algorithm-greedy-algo-2/
+     * @param edges
+     * @return
+     */
     private static List<Edge> kruskalAlgorithm(List<Edge> edges){
         List<Edge> mst = new ArrayList<>();
 
         //1. sort edges in non-decreasing weight
-        //Arrays.sort(edges, Comparator.comparing(Edge::getCost));
+        List<Edge> sortedEdges = new ArrayList<>(edges);
+        Collections.sort(sortedEdges, new Comparator<Edge>() {
+            @Override
+            public int compare(Edge o1, Edge o2) {
+                if(o1.getCost() < o2.getCost()){
+                    return 1;
+                }else if(o1.getCost() == o2.getCost()){
+                    return 0;
+                }
+                return -1;
+            }
+        });
         //2. pick the lowest edge -> if cycle in msr: discard, else: keep
-
+        Edge lowestCost = sortedEdges.get()
         //3. repeat 2 until V-1 edges in mst
 
         return mst;
