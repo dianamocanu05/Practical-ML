@@ -9,5 +9,6 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         List<Point> points = Utils.parseDataset(dataPath,2);
+        Algorithms.topDownClustering(points);
     }
 }
