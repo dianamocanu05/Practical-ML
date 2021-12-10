@@ -54,36 +54,35 @@ public class Algorithms {
         });
 
 
-        for (Edge edge : mst){
-            System.out.println(edge.getSrc().getName() + " " + edge.getDest().getName());
-        }
 
-        System.out.println(isCycle(mst));
         int idx=2;
         while(mst.size()>=1){
-            //System.out.println("Removed : " + mst.get(0).getDest().getName() + " " + mst.get(0).getSrc().getName());
-            mst.remove(0);
-
-            System.out.println("K=" + idx);
-            printClusters(mst);
+            if(idx != 2) {
+                mst.remove(0);
+            }
+            int clusters = printClusters(mst);
+            System.out.println("CLUSTERS K=" + clusters);
             idx++;
         }
 
     }
 
-    private static void printClusters(List<Edge> mst){
+    private static int printClusters(List<Edge> mst){
         //clusters are represented by the vertices of connected components of the mst
-        connectedComponents(allPoints,mst);
+        return connectedComponents(allPoints,mst);
     }
 
-    private static void connectedComponents(List<Point> points, List<Edge> mst){
+    private static int connectedComponents(List<Point> points, List<Edge> mst){
+        int clusters = 0;
         visited = new ArrayList<>();
         for(Point point : points){
             if(!visited.contains(point)){
                 DFSUtil(point, mst);
                 System.out.println();
+                clusters++;
             }
         }
+        return clusters;
     }
 
     private static void DFSUtil(Point point,List<Edge> mst){
@@ -123,7 +122,8 @@ public class Algorithms {
         //2. pick the lowest edge -> if cycle in msr: discard, else: keep
         //3. repeat 2 until V-1 edges in mst
 
-        while (mst.size() <= V-1){
+        while (mst.size() < V-1){
+
               Edge currentEdge = sortedEdges.get(0);
               mst.add(currentEdge);
               if(isCycle(mst)){
@@ -137,11 +137,14 @@ public class Algorithms {
     }
 
     private static boolean isCycle(List<Edge> tree){
-        visited = new ArrayList<>();
+        visited.clear();
+        if(tree.size() == 1 || tree.size() == 2){
+            return false;
+        }
         List<Point> points = getPoints(tree);
         for(Point point : points){ //for each vertex
-            if(!visited.contains(point)){ //if not visited
-                if(isCyclicUtil(point, visited, null, tree)){
+            if(!alreadyVisited(point)){ //if not visited
+                if(isCyclicUtil(point, null, tree)){
                     return true;
                 }
             }
@@ -163,16 +166,13 @@ public class Algorithms {
         return adjacencyList;
     }
 
-    private static boolean isCyclicUtil(Point point, List<Point> visited, Point parent,List<Edge> edges){
+    private static boolean isCyclicUtil(Point point, Point parent,List<Edge> edges){
         visited.add(point);
         List<Point> adjacencyList = getAdjacencyList(point, edges);
 
         for(Point adjPoint : adjacencyList){
-            if(!visited.contains(adjPoint)){
-                if(isCyclicUtil(adjPoint,visited,point,edges)){
-                    return true;
-                }
-                else if(adjPoint != parent){
+            if(!alreadyVisited(adjPoint)){
+                if(isCyclicUtil(adjPoint,point,edges)){
                     return true;
                 }
             }
@@ -193,6 +193,16 @@ public class Algorithms {
             }
         }
         return points;
+    }
+
+
+    private static boolean alreadyVisited(Point point){
+        for(Point other : visited){
+            if(other.getName().equals(point.getName())){
+                return true;
+            }
+        }
+        return false;
     }
 
 
